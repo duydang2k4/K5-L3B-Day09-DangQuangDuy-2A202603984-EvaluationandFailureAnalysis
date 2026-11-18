@@ -1,6 +1,6 @@
 # Trace case: C-002@11
 
-Chạy `python -m lab9.trace_case --shape seeded_regression --claim C-002 --seed 11`, rồi chạy cùng claim và seed với `--shape fixed` để đối chứng. Report M4 là `E-seeded_regression-20261118-456c` và `E-fixed-20261118-456c`.
+Chạy `python -m lab9.trace_case --shape seeded_regression --claim C-002 --seed 11`, rồi chạy cùng claim và seed với `--shape fixed` để đối chứng. Report M4 là `E-seeded_regression-20261118-f3c2` và `E-fixed-20261118-f3c2`.
 
 | Trường | Kết quả |
 |---|---|

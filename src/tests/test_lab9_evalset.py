@@ -1,12 +1,25 @@
 """M0 command-line checks run before completing the M1 taxonomy."""
 
 import json
+import hashlib
 import os
 from pathlib import Path
 import subprocess
 import sys
 
 import pytest
+
+
+def test_eval_set_sha_is_independent_of_checkout_line_endings(tmp_path):
+    from lab9.evalset import sha12
+
+    path = tmp_path / "items.jsonl"
+    raw = b'{"item_id":"E-001"}\n{"item_id":"E-002"}\n'
+    path.write_bytes(raw)
+    expected = hashlib.sha256(raw).hexdigest()[:12]
+    assert sha12(path) == expected
+    path.write_bytes(raw.replace(b"\n", b"\r\n"))
+    assert sha12(path) == expected
 
 
 @pytest.fixture

@@ -8,7 +8,7 @@ Xử lý claim hoàn tiền theo dữ liệu đơn hàng, policy, approval và l
 
 ## Tiêu chí release
 
-Spec nguồn: `src/config/metric_spec.yaml` v1.0. Baseline `E-swarm-20261118-456c` (eval-set SHA `456ccef33917`).
+Spec nguồn: `src/config/metric_spec.yaml` v1.0. Baseline `E-swarm-20261118-f3c2` (eval-set SHA `f3c26fbee94a`).
 
 | Metric | Sàn/trần | Blocking | Baseline |
 |---|---:|---|---:|
