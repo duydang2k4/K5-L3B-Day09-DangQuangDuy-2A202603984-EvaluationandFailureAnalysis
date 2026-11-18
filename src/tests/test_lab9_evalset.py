@@ -28,15 +28,42 @@ def evalset_cli(tmp_path):
     return run_evalset
 
 
-def test_build_writes_items_and_labels_without_checking_tags(tmp_path, evalset_cli):
+def test_build_writes_tagged_items_and_separate_labels(tmp_path, evalset_cli):
     result = evalset_cli("--build")
     assert result.returncode == 0, result.stdout + result.stderr
     assert "problem(s)" not in result.stdout
     item = json.loads((tmp_path / "data/eval/eval_set_v1.jsonl").read_text(encoding="utf-8"))
     labels = json.loads((tmp_path / "data/eval/labels_v1.json").read_text(encoding="utf-8"))
     assert item["claim_id"] == "C-001"
+    assert item["failure_modes"] == ["FM-01", "FM-04", "FM-07"]
     assert "expected" not in item
     assert labels == {"C-001": {"refund_vnd": 35000}}
+
+
+def test_build_assigns_scenario_modes_without_inlining_labels(tmp_path, evalset_cli):
+    source = tmp_path / "data/public_claims.jsonl"
+    claims = [
+        {"claim_id": "C-002", "matrix_id": "T02", "expected": {"refund_vnd": 0}},
+        {"claim_id": "C-007", "matrix_id": "T07", "expected": {"refund_vnd": 0}},
+        {"claim_id": "C-014", "matrix_id": "T14", "expected": {"refund_vnd": 120000}},
+    ]
+    source.write_text("".join(json.dumps(claim) + "\n" for claim in claims), encoding="utf-8")
+
+    result = evalset_cli("--build", "--check")
+    assert result.returncode == 0, result.stdout + result.stderr
+    items = {
+        item["claim_id"]: item
+        for item in map(
+            json.loads,
+            (tmp_path / "data/eval/eval_set_v1.jsonl").read_text(encoding="utf-8").splitlines(),
+        )
+    }
+    labels = json.loads((tmp_path / "data/eval/labels_v1.json").read_text(encoding="utf-8"))
+    assert items["C-002"]["failure_modes"] == ["FM-01", "FM-03"]
+    assert items["C-007"]["failure_modes"] == ["FM-01", "FM-02", "FM-04"]
+    assert items["C-014"]["failure_modes"] == ["FM-01", "FM-04", "FM-05", "FM-08"]
+    assert all("expected" not in item for item in items.values())
+    assert labels == {claim["claim_id"]: claim["expected"] for claim in claims}
 
 
 def test_explicit_check_runs_after_build(tmp_path, evalset_cli):
